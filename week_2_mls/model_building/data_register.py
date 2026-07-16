@@ -1,9 +1,6 @@
 """
 Validate the raw dataset that ships with the repo.
-
-In the HuggingFace version this uploaded the CSV to a HF dataset repo.
-Now the CSV lives in the repo itself, so we just sanity-check it so the
-pipeline fails fast if the file is missing or the schema drifted.
+Checks that the CSV exists and has the required columns.
 """
 from pathlib import Path
 import sys
