@@ -14,7 +14,8 @@ permissions:
   contents: write
 
 jobs:
-  build-model:
+  # ---------- 1. Validate the raw dataset ----------
+  data-register:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,11 +31,80 @@ jobs:
       - name: Validate dataset
         run: python week_2_mls/model_building/data_register.py
 
+  # ---------- 2. Preprocess & split ----------
+  data-preprocessing:
+    needs: data-register
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r week_2_mls/requirements.txt
+
       - name: Prepare data
         run: python week_2_mls/model_building/prep.py
 
+      - name: Upload processed data
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-data
+          path: week_2_mls/data/processed/
+          retention-days: 1
+
+  # ---------- 3. Train the model ----------
+  model-training:
+    needs: data-preprocessing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r week_2_mls/requirements.txt
+
+      - name: Download processed data
+        uses: actions/download-artifact@v4
+        with:
+          name: processed-data
+          path: week_2_mls/data/processed/
+
       - name: Train model
         run: python week_2_mls/model_building/train.py
+
+      - name: Upload trained model
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: week_2_mls/deployment/model/
+          retention-days: 1
+
+  # ---------- 4. Commit model back to repo ----------
+  deployment:
+    needs: model-training
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download trained model
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-model
+          path: week_2_mls/deployment/model/
+
+      - name: Download processed data
+        uses: actions/download-artifact@v4
+        with:
+          name: processed-data
+          path: week_2_mls/data/processed/
 
       - name: Commit trained model back to the repo
         run: |
