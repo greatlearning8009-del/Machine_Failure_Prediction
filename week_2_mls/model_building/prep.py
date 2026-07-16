@@ -1,7 +1,6 @@
 """
-Read the raw CSV from disk, encode the categorical column, split, and
-write the four train/test files under week_2_mls/data/processed/.
-No HuggingFace calls.
+Read raw CSV, encode categoricals, split into train/test,
+and save to week_2_mls/data/processed/.
 """
 from pathlib import Path
 import pandas as pd
@@ -21,14 +20,15 @@ df.drop(columns=["UDI"], inplace=True)
 # Encode the categorical 'Type' column
 df["Type"] = LabelEncoder().fit_transform(df["Type"])
 
-target_col = "Failure"
-X = df.drop(columns=[target_col])
-y = df[target_col]
+# Split features and target
+X = df.drop(columns=["Failure"])
+y = df["Failure"]
 
 Xtrain, Xtest, ytrain, ytest = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
+# Save splits
 Xtrain.to_csv(OUT_DIR / "Xtrain.csv", index=False)
 Xtest.to_csv(OUT_DIR / "Xtest.csv", index=False)
 ytrain.to_csv(OUT_DIR / "ytrain.csv", index=False)
