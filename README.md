@@ -1,8 +1,7 @@
 # Machine Failure Prediction
 
 Predictive maintenance for a manufacturing line, trained on sensor + operational
-data. The whole pipeline lives inside GitHub — no HuggingFace, no external
-hosting.
+data. The whole pipeline lives inside GitHub — no external hosting needed.
 
 ## How it works
 
@@ -13,9 +12,9 @@ hosting.
    and commits `best_machine_failure_model_v1.joblib` back to the repo.
 3. **GitHub Codespaces** (`.devcontainer/devcontainer.json`) auto-launches
    `streamlit run` on port 8501 when you open the repo. The port is
-   auto-forwarded, and the app URL opens on its own inside Codespaces.
+   auto-forwarded and made public.
 
 ## Try it
 
 Click **Code → Codespaces → Create codespace on main**. Give it ~30 seconds and
-the Streamlit app opens automatically in the Simple Browser tab.
+the Streamlit app opens automatically in a new browser tab.
