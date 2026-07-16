@@ -1,0 +1,50 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "week_2_mls/deployment/model/**"
+      - "week_2_mls/data/processed/**"
+      - "**/*.md"
+      - ".devcontainer/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r week_2_mls/requirements.txt
+
+      - name: Validate dataset
+        run: python week_2_mls/model_building/data_register.py
+
+      - name: Prepare data
+        run: python week_2_mls/model_building/prep.py
+
+      - name: Train model
+        run: python week_2_mls/model_building/train.py
+
+      - name: Commit trained model back to the repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add week_2_mls/deployment/model/best_machine_failure_model_v1.joblib \
+                  week_2_mls/data/processed/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update trained model [skip ci]"
+            git push
+          fi

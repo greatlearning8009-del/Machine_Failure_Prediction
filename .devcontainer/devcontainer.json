@@ -1,0 +1,23 @@
+{
+  "name": "Machine Failure Prediction",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.11",
+
+  "postCreateCommand": "pip install --upgrade pip && pip install -r week_2_mls/deployment/requirements.txt",
+
+  "postStartCommand": "pgrep -f 'streamlit run' >/dev/null || nohup streamlit run week_2_mls/deployment/app.py --server.port=8501 --server.address=0.0.0.0 --server.headless=true --server.enableXsrfProtection=false >/tmp/streamlit.log 2>&1 &",
+
+  "forwardPorts": [8501],
+  "portsAttributes": {
+    "8501": {
+      "label": "Streamlit App",
+      "onAutoForward": "openPreview",
+      "protocol": "http"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}
