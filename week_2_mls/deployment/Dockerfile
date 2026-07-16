@@ -1,5 +1,5 @@
-# Kept for anyone who wants to containerise the app for a non-Codespaces host.
-# Codespaces itself does NOT use this Dockerfile — it uses .devcontainer/devcontainer.json.
+# Optional: for running the app outside Codespaces (e.g., Docker, cloud VMs).
+# Codespaces uses .devcontainer/devcontainer.json instead.
 FROM python:3.11-slim
 
 WORKDIR /app
